@@ -105,7 +105,7 @@ If ($InstallFlag) {
 If ($RunUpdater -Or $RunAll) {
 
     Write-Host "Invoking updater script..."
-    If (Test-Path "C:\Startup\Scripts\Updater.ps1") { Invoke-Command "C:\Startup\Scripts\Updater.ps1" } Else { Write-Host "Updater script was not found!" }
+    If (Test-Path "C:\Startup\Scripts\Updater.ps1") { . "C:\Startup\Scripts\Updater.ps1" } Else { Write-Host "Updater script was not found!" }
 
 }
 
@@ -113,7 +113,7 @@ If ($RunUpdater -Or $RunAll) {
 If ($RunSystem -Or $RunAll) {
 
     Write-Host "Invoking system script..."
-    If (Test-Path "C:\Startup\Scripts\System.ps1") { Invoke-Command "C:\Startup\Scripts\System.ps1" } Else { Write-Host "System script was not found!" }
+    If (Test-Path "C:\Startup\Scripts\System.ps1") { . "C:\Startup\Scripts\System.ps1" } Else { Write-Host "System script was not found!" }
 
 }
 
