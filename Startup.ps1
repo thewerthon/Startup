@@ -21,9 +21,10 @@ $Repository = "thewerthon/startup"
 # Create Paths
 New-Item -Path $RegPath -ErrorAction Ignore | Out-Null
 New-Item -ItemType Directory -Path $Folder -ErrorAction Ignore | Out-Null
+Get-Item $Folder -ErrorAction Ignore | ForEach-Object { $_.Attributes = "Directory,System,Hidden" }
 
 # Export Args
-[String]$Args | Out-File "C:\Startup\Args.txt" -Force
+[String]$Args | Out-File "$Folder\Args.txt" -Force
 
 # Check Args
 $KeepFlag = [String]$Args -Match "[-/]k"
@@ -51,7 +52,7 @@ If ($UpdateFlag -Or $InstallFlag) {
         # Download and extract
         Invoke-WebRequest -Uri $FileUrl -OutFile $FilePath
         Expand-Archive -Path $FilePath -DestinationPath $Folder -Force
-        $NewFolder = Get-ChildItem -Path "C:\Startup" -Directory | Where-Object { $_.Name -Like "$($Repository.Replace('/','-'))-*" }
+        $NewFolder = Get-ChildItem -Path "$Folder" -Directory | Where-Object { $_.Name -Like "$($Repository.Replace('/','-'))-*" }
 
         # Check if extracted
         If ($NewFolder) {
@@ -87,14 +88,14 @@ If ($UpdateFlag -Or $InstallFlag) {
 If ($InstallFlag) {
 
     # Remove tasks
-    If (Test-Path "C:\Startup\Tasks\Updater.xml") { Get-ScheduledTask -TaskName "Startup\Updater" -ErrorAction Ignore | Unregister-ScheduledTask -Confirm:$False }
-    If (Test-Path "C:\Startup\Tasks\System.xml") { Get-ScheduledTask -TaskName "Startup\System" -ErrorAction Ignore | Unregister-ScheduledTask -Confirm:$False }
-    If (Test-Path "C:\Startup\Tasks\User.xml") { Get-ScheduledTask -TaskName "Startup\User" -ErrorAction Ignore | Unregister-ScheduledTask -Confirm:$False }
+    If (Test-Path "$Folder\Tasks\Updater.xml") { Get-ScheduledTask -TaskName "Startup\Updater" -ErrorAction Ignore | Unregister-ScheduledTask -Confirm:$False }
+    If (Test-Path "$Folder\Tasks\System.xml") { Get-ScheduledTask -TaskName "Startup\System" -ErrorAction Ignore | Unregister-ScheduledTask -Confirm:$False }
+    If (Test-Path "$Folder\Tasks\User.xml") { Get-ScheduledTask -TaskName "Startup\User" -ErrorAction Ignore | Unregister-ScheduledTask -Confirm:$False }
 	
     # Create tasks
-    If (Test-Path "C:\Startup\Tasks\Updater.xml") { Register-ScheduledTask -TaskName "Startup\Updater" -Xml (Get-Content "C:\Startup\Tasks\Updater.xml" | Out-String) -Force | Out-Null }
-    If (Test-Path "C:\Startup\Tasks\System.xml") { Register-ScheduledTask -TaskName "Startup\System" -Xml (Get-Content "C:\Startup\Tasks\System.xml" | Out-String) -Force | Out-Null }
-    If (Test-Path "C:\Startup\Tasks\User.xml") { Register-ScheduledTask -TaskName "Startup\User" -Xml (Get-Content "C:\Startup\Tasks\User.xml" | Out-String) -Force | Out-Null }
+    If (Test-Path "$Folder\Tasks\Updater.xml") { Register-ScheduledTask -TaskName "Startup\Updater" -Xml (Get-Content "$Folder\Tasks\Updater.xml" | Out-String) -Force | Out-Null }
+    If (Test-Path "$Folder\Tasks\System.xml") { Register-ScheduledTask -TaskName "Startup\System" -Xml (Get-Content "$Folder\Tasks\System.xml" | Out-String) -Force | Out-Null }
+    If (Test-Path "$Folder\Tasks\User.xml") { Register-ScheduledTask -TaskName "Startup\User" -Xml (Get-Content "$Folder\Tasks\User.xml" | Out-String) -Force | Out-Null }
 	
     # Clear and register
     New-ItemProperty -Path $RegPath -Name "Updated" -Value (Get-Date).ToString("s") -PropertyType "String" -Force | Out-Null
@@ -106,7 +107,7 @@ If ($RunUpdater -Or $RunAll) {
 
     Write-Host ""
     Write-Host "Invoking updater script..."
-    If (Test-Path "C:\Startup\Scripts\Updater.ps1") { . "C:\Startup\Scripts\Updater.ps1" } Else { Write-Host "Updater script was not found!" }
+    If (Test-Path "$Folder\Scripts\Updater.ps1") { . "$Folder\Scripts\Updater.ps1" } Else { Write-Host "Updater script was not found!" }
 
 }
 
@@ -115,7 +116,7 @@ If ($RunSystem -Or $RunAll) {
 
     Write-Host ""
     Write-Host "Invoking system script..."
-    If (Test-Path "C:\Startup\Scripts\System.ps1") { . "C:\Startup\Scripts\System.ps1" } Else { Write-Host "System script was not found!" }
+    If (Test-Path "$Folder\Scripts\System.ps1") { . "$Folder\Scripts\System.ps1" } Else { Write-Host "System script was not found!" }
 
 }
 
@@ -125,13 +126,16 @@ If ($RunUser -Or $RunAll) {
     Write-Host ""
     Write-Host "Invoking user script..."
     Write-Host "Script will run in another window."
-    If ($KeepFlag) { $UserScript = "C:\Startup\Helpers\UserKeep.vbs" } Else { $UserScript = "C:\Startup\Helpers\UserView.vbs" }
-    If ((Test-Path $UserScript) -And (Test-Path "C:\Startup\Scripts\User.ps1")) { Start-Process Explorer $UserScript } Else { Write-Host "User script was not found!" }
+    If ($KeepFlag) { $UserScript = "$Folder\Helpers\UserKeep.vbs" } Else { $UserScript = "$Folder\Helpers\UserView.vbs" }
+    If ((Test-Path $UserScript) -And (Test-Path "$Folder\Scripts\User.ps1")) { Start-Process Explorer $UserScript } Else { Write-Host "User script was not found!" }
 
 }
 
-# Clear Args
-Remove-Item "C:\Startup\Args.txt" -Force
+# Clean Up
+Remove-Item "$Folder\Args.txt" -Force
+Remove-Item "$Folder\Startup.zip" -Force
+Remove-Item "$Folder\README.md" -Force
+Remove-Item "$Folder\Tasks" -Recurse -Force
 
 # Terminate
 Write-Host ""
