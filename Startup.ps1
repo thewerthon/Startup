@@ -104,6 +104,7 @@ If ($InstallFlag) {
 # Run Updater Script
 If ($RunUpdater -Or $RunAll) {
 
+    Write-Host ""
     Write-Host "Invoking updater script..."
     If (Test-Path "C:\Startup\Scripts\Updater.ps1") { . "C:\Startup\Scripts\Updater.ps1" } Else { Write-Host "Updater script was not found!" }
 
@@ -112,6 +113,7 @@ If ($RunUpdater -Or $RunAll) {
 # Run System Script
 If ($RunSystem -Or $RunAll) {
 
+    Write-Host ""
     Write-Host "Invoking system script..."
     If (Test-Path "C:\Startup\Scripts\System.ps1") { . "C:\Startup\Scripts\System.ps1" } Else { Write-Host "System script was not found!" }
 
@@ -120,9 +122,11 @@ If ($RunSystem -Or $RunAll) {
 # Run User Script
 If ($RunUser -Or $RunAll) {
 
+    Write-Host ""
     Write-Host "Invoking user script..."
-    $UserScript = If ($KeepFlag) { "C:\Startup\Helpers\UserKeep.vbs" } Else { "C:\Startup\Helpers\UserView.vbs" }
-    If (Test-Path $UserScript -And Test-Path "C:\Startup\Scripts\User.ps1") { Start-Process Explorer $UserScript } Else { Write-Host "User script was not found!" }
+    Write-Host "Script will run in another window."
+    If ($KeepFlag) { $UserScript = "C:\Startup\Helpers\UserKeep.vbs" } Else { $UserScript = "C:\Startup\Helpers\UserView.vbs" }
+    If ((Test-Path $UserScript) -And (Test-Path "C:\Startup\Scripts\User.ps1")) { Start-Process Explorer $UserScript } Else { Write-Host "User script was not found!" }
 
 }
 
@@ -130,4 +134,5 @@ If ($RunUser -Or $RunAll) {
 Remove-Item "C:\Startup\Args.txt" -Force
 
 # Terminate
+Write-Host ""
 If ($KeepFlag) { Read-Host "Press [Enter] to exit" } Else { Exit }
