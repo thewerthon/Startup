@@ -99,11 +99,11 @@ If ($RunUser -Or $RunAll) {
 }
 
 # Clean Up
-Remove-Item "$Folder\Args.txt" -Force
-Remove-Item "$Folder\Startup.zip" -Force
-Remove-Item "$Folder\README.md" -Force
-Remove-Item "$Folder\Tasks" -Recurse -Force
-Remove-Item "$Folder\Setup" -Recurse -Force
+Remove-Item "$Folder\Args.txt" -Force -ErrorAction Ignore
+Remove-Item "$Folder\Startup.zip" -Force -ErrorAction Ignore
+Remove-Item "$Folder\README.md" -Force -ErrorAction Ignore
+Remove-Item "$Folder\Tasks" -Recurse -Force -ErrorAction Ignore
+Remove-Item "$Folder\Setup" -Recurse -Force -ErrorAction Ignore
 
 # Terminate
 Write-Host ""
