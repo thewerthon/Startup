@@ -136,6 +136,7 @@ Remove-Item "$Folder\Args.txt" -Force
 Remove-Item "$Folder\Startup.zip" -Force
 Remove-Item "$Folder\README.md" -Force
 Remove-Item "$Folder\Tasks" -Recurse -Force
+Remove-Item "$Folder\Setup" -Recurse -Force
 
 # Terminate
 Write-Host ""
