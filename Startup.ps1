@@ -74,7 +74,7 @@ If ($InstallFlag) {
     If (Test-Path "$Folder\Tasks\User.xml") { Register-ScheduledTask -TaskName "Startup\User" -Xml (Get-Content "$Folder\Tasks\User.xml" | Out-String) -Force | Out-Null }
 	
     # Register
-    New-ItemProperty -Path $RegPath -Name "Updated" -Value (Get-Date).ToString("s") -PropertyType "String" -Force | Out-Null
+    New-ItemProperty -Path $RegPath -Name "Installed" -Value (Get-Date).ToString("s") -PropertyType "String" -Force | Out-Null
 
 }
 
