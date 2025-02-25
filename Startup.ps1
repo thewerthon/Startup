@@ -16,7 +16,8 @@ If (!(([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]
 $Folder = "C:\Startup"
 $RegPath = "HKLM:\Software\Startup"
 $FilePath = Join-Path $Folder "Startup.zip"
-$Repository = "thewerthon/startup"
+$Repository = "thewerthon/Startup"
+$RepositoryPath = "$Repository/main/Startup.zip"
 
 # Create Paths
 New-Item -Path $RegPath -ErrorAction Ignore | Out-Null
@@ -41,46 +42,12 @@ If ($UpdateFlag -Or $InstallFlag) {
     # Message
     If ($InstallFlag) { Write-Host "Installing scripts..." } Else { Write-Host "Updating scripts..." }
 
-    # Get latest release
-    $ApiUrl = "https://api.github.com/repos/$Repository/releases/latest"
-    $Release = Invoke-RestMethod -Uri $ApiUrl
-    $FileUrl = $Release.zipball_url
+    # Get latest
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/$RepositoryPath" -OutFile $FilePath
+    Expand-Archive -Path $FilePath -DestinationPath $Folder -Force
 
-    # Check if exists
-    If ($FileUrl) {
-
-        # Download and extract
-        Invoke-WebRequest -Uri $FileUrl -OutFile $FilePath
-        Expand-Archive -Path $FilePath -DestinationPath $Folder -Force
-        $NewFolder = Get-ChildItem -Path "$Folder" -Directory | Where-Object { $_.Name -Like "$($Repository.Replace('/','-'))-*" }
-
-        # Check if extracted
-        If ($NewFolder) {
-
-            # Move files
-            Get-ChildItem -Path $NewFolder.FullName -Recurse | Where-Object { $_.FullName -NotLike "*\.*" } | ForEach-Object {
-
-                $NewPath = $_.FullName.Replace($NewFolder.FullName, $Folder)
-            
-                If ($_.PSIsContainer) {
-
-                    New-Item -ItemType Directory -Path $NewPath -ErrorAction Ignore | Out-Null
-
-                } Else {
-
-                    Move-Item -Path $_.FullName -Destination $NewPath -Force
-
-                }
-
-            }
-
-            # Clear and register
-            Remove-Item -Path $NewFolder.FullName -Recurse -Force
-            New-ItemProperty -Path $RegPath -Name "Updated" -Value (Get-Date).ToString("s") -PropertyType "String" -Force | Out-Null
-
-        }
-
-    }
+    # Register
+    New-ItemProperty -Path $RegPath -Name "Updated" -Value (Get-Date).ToString("s") -PropertyType "String" -Force | Out-Null
 
 }
 
@@ -97,7 +64,7 @@ If ($InstallFlag) {
     If (Test-Path "$Folder\Tasks\System.xml") { Register-ScheduledTask -TaskName "Startup\System" -Xml (Get-Content "$Folder\Tasks\System.xml" | Out-String) -Force | Out-Null }
     If (Test-Path "$Folder\Tasks\User.xml") { Register-ScheduledTask -TaskName "Startup\User" -Xml (Get-Content "$Folder\Tasks\User.xml" | Out-String) -Force | Out-Null }
 	
-    # Clear and register
+    # Register
     New-ItemProperty -Path $RegPath -Name "Updated" -Value (Get-Date).ToString("s") -PropertyType "String" -Force | Out-Null
 
 }
