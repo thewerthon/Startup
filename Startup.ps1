@@ -17,7 +17,6 @@ $Folder = "C:\Startup"
 $RegPath = "HKLM:\Software\Startup"
 $FilePath = Join-Path $Folder "Startup.zip"
 $Repository = "thewerthon/Startup"
-$RepositoryPath = "$Repository/main/Startup.zip"
 
 # Create Paths
 New-Item -Path $RegPath -ErrorAction Ignore | Out-Null
@@ -42,12 +41,22 @@ If ($UpdateFlag -Or $InstallFlag) {
     # Message
     If ($InstallFlag) { Write-Host "Installing scripts..." } Else { Write-Host "Updating scripts..." }
 
-    # Get latest
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/$RepositoryPath" -OutFile $FilePath
-    Expand-Archive -Path $FilePath -DestinationPath $Folder -Force
+    # Get latest release
+    $ApiUrl = "https://api.github.com/repos/$Repository/releases/latest"
+    $Release = Invoke-RestMethod -Uri $ApiUrl
+    $FileUrl = $Release.assets.browser_download_url
 
-    # Register
-    New-ItemProperty -Path $RegPath -Name "Updated" -Value (Get-Date).ToString("s") -PropertyType "String" -Force | Out-Null
+    # Check if exists
+    If ($FileUrl) {
+
+        # Download and extract
+        Invoke-WebRequest -Uri $FileUrl -OutFile $FilePath
+        Expand-Archive -Path $FilePath -DestinationPath $Folder -Force
+        
+        # Register
+        New-ItemProperty -Path $RegPath -Name "Updated" -Value (Get-Date).ToString("s") -PropertyType "String" -Force | Out-Null
+
+    }
 
 }
 
