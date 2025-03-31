@@ -1,0 +1,38 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+  
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    env:
+      build: "0000"
+ 
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create Zip File
+        run: zip -r Startup.zip . -x ".git/*" ".github/*" ".gitignore" ".vscode/*" "README.md" "Setup/*" "Drivers/*"
+
+      - name: Set Tag Name
+        run: echo "build=$(printf '%04d' ${{ github.run_number }})" >> $GITHUB_ENV
+
+      - name: Publish Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.build }}
+          name: "Build ${{ env.build }}"
+          draft: false
+          prerelease: false
+          make_latest: true
+          files: Startup.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
