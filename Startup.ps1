@@ -57,15 +57,20 @@ If ($UpdateFlag -Or $InstallFlag) {
 # Install Scripts
 If ($InstallFlag) {
 
+    # Stop Tasks
+    Stop-ScheduledTask -TaskName "Accent" -TaskPath "Startup" -ErrorAction Ignore
+    Stop-ScheduledTask -TaskName "Glyphs" -TaskPath "Startup" -ErrorAction Ignore
+    Stop-ScheduledTask -TaskName "Glyphs" -TaskPath "Startup" -ErrorAction Ignore
+
     # Remove tasks
-    If (Test-Path "C:\Startup\Tasks\Updater.xml") { Get-ScheduledTask -TaskName "Startup\Updater" -ErrorAction Ignore | Unregister-ScheduledTask -Confirm:$False }
-    If (Test-Path "C:\Startup\Tasks\System.xml") { Get-ScheduledTask -TaskName "Startup\System" -ErrorAction Ignore | Unregister-ScheduledTask -Confirm:$False }
-    If (Test-Path "C:\Startup\Tasks\User.xml") { Get-ScheduledTask -TaskName "Startup\User" -ErrorAction Ignore | Unregister-ScheduledTask -Confirm:$False }
+    If (Test-Path "C:\Startup\Tasks\Updater.xml") { Get-ScheduledTask -TaskName "Updater" -TaskPath "*Startup*" -ErrorAction Ignore | Unregister-ScheduledTask -Confirm:$False }
+    If (Test-Path "C:\Startup\Tasks\System.xml") { Get-ScheduledTask -TaskName "System" -TaskPath "*Startup*" -ErrorAction Ignore | Unregister-ScheduledTask -Confirm:$False }
+    If (Test-Path "C:\Startup\Tasks\User.xml") { Get-ScheduledTask -TaskName "User" -TaskPath "*Startup*" -ErrorAction Ignore | Unregister-ScheduledTask -Confirm:$False }
 	
     # Create tasks
-    If (Test-Path "C:\Startup\Tasks\Updater.xml") { Register-ScheduledTask -TaskName "Startup\Updater" -Xml (Get-Content "C:\Startup\Tasks\Updater.xml" | Out-String) -Force | Out-Null }
-    If (Test-Path "C:\Startup\Tasks\System.xml") { Register-ScheduledTask -TaskName "Startup\System" -Xml (Get-Content "C:\Startup\Tasks\System.xml" | Out-String) -Force | Out-Null }
-    If (Test-Path "C:\Startup\Tasks\User.xml") { Register-ScheduledTask -TaskName "Startup\User" -Xml (Get-Content "C:\Startup\Tasks\User.xml" | Out-String) -Force | Out-Null }
+    If (Test-Path "C:\Startup\Tasks\Updater.xml") { Register-ScheduledTask -TaskName "Updater" -TaskPath "Startup" -Xml (Get-Content "C:\Startup\Tasks\Updater.xml" | Out-String) -Force | Out-Null }
+    If (Test-Path "C:\Startup\Tasks\System.xml") { Register-ScheduledTask -TaskName "System" -TaskPath "Startup" -Xml (Get-Content "C:\Startup\Tasks\System.xml" | Out-String) -Force | Out-Null }
+    If (Test-Path "C:\Startup\Tasks\User.xml") { Register-ScheduledTask -TaskName "User" -TaskPath "Startup" -Xml (Get-Content "C:\Startup\Tasks\User.xml" | Out-String) -Force | Out-Null }
 	
     # Register
     New-ItemProperty -Path "HKLM:\Software\Startup" -Name "Installed" -Value (Get-Date).ToString("s") -PropertyType "String" -Force | Out-Null
