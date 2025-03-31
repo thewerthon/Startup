@@ -12,6 +12,10 @@ If (!(([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]
 
 }
 
+# Execution Policy
+Set-ExecutionPolicy -ExecutionPolicy "Unrestricted" -Scope "LocalMachine" -Force -ErrorAction Ignore | Out-Null
+Set-ExecutionPolicy -ExecutionPolicy "Unrestricted" -Scope "CurrentUser" -Force -ErrorAction Ignore | Out-Null
+
 # Create Paths
 New-Item -Path "HKLM:\Software\Startup" -ErrorAction Ignore | Out-Null
 New-Item -ItemType Directory -Path "C:\Startup" -ErrorAction Ignore | Out-Null
