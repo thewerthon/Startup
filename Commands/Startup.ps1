@@ -37,7 +37,7 @@ $RunAll = -Not ($RunUpdater -Or $RunSystem -Or $RunUser)
 If ($UpdateFlag -Or $InstallFlag) {
 
     # Message
-    If ($InstallFlag) { Write-Host "Installing scripts..." } Else { Write-Host "Updating scripts..." }
+    If ($InstallFlag) { Write-Host "Installing scripts..." -ForegroundColor Gray } Else { Write-Host "Updating scripts..." -ForegroundColor Gray }
 
     # Get Latest Release
     $ApiUrl = "https://api.github.com/repos/thewerthon/Startup/releases/latest"
@@ -84,28 +84,25 @@ If ($InstallFlag) {
 # Run Updater Script
 If ($RunUpdater -Or $RunAll) {
 
-    Write-Host ""
-    Write-Host "Invoking updater script..."
-    If (Test-Path "C:\Startup\Scripts\Updater.ps1") { . "C:\Startup\Scripts\Updater.ps1" } Else { Write-Host "Updater script was not found!" }
+    Write-Host "Invoking updater script..." -ForegroundColor Gray
+    If (Test-Path "C:\Startup\Scripts\Updater.ps1") { . "C:\Startup\Scripts\Updater.ps1" } Else { Write-Host "Updater script was not found!" -ForegroundColor Gray }
 
 }
 
 # Run System Script
 If ($RunSystem -Or $RunAll) {
 
-    Write-Host ""
-    Write-Host "Invoking system script..."
-    If (Test-Path "C:\Startup\Scripts\System.ps1") { . "C:\Startup\Scripts\System.ps1" } Else { Write-Host "System script was not found!" }
+    Write-Host "Invoking system script..." -ForegroundColor Gray
+    If (Test-Path "C:\Startup\Scripts\System.ps1") { . "C:\Startup\Scripts\System.ps1" } Else { Write-Host "System script was not found!" -ForegroundColor Gray }
 
 }
 
 # Run User Script
 If ($RunUser -Or $RunAll) {
 
-    Write-Host ""
-    Write-Host "Invoking user script in another window..."
+    Write-Host "Invoking user script in another window..." -ForegroundColor Gray
     If ($KeepFlag) { $UserScript = "C:\Startup\Helpers\UserKeep.vbs" } Else { $UserScript = "C:\Startup\Helpers\UserView.vbs" }
-    If ((Test-Path $UserScript) -And (Test-Path "C:\Startup\Scripts\User.ps1")) { Start-Process Explorer $UserScript } Else { Write-Host "User script was not found!" }
+    If ((Test-Path $UserScript) -And (Test-Path "C:\Startup\Scripts\User.ps1")) { Start-Process Explorer $UserScript } Else { Write-Host "User script was not found!" -ForegroundColor Gray }
 
 }
 
@@ -117,5 +114,4 @@ Remove-Item "C:\Startup\Tasks" -Recurse -Force -ErrorAction Ignore
 Remove-Item "C:\Startup\Setup" -Recurse -Force -ErrorAction Ignore
 
 # Terminate
-Write-Host ""
 If ($KeepFlag) { Read-Host "Press [Enter] to exit" } Else { Exit }

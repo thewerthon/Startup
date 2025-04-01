@@ -24,7 +24,18 @@ Write-Host "===============================" -ForegroundColor Green
 Write-Host "Activation script is running, please wait..." -ForegroundColor Green
 Start-Process "C:\Windows\System32\cmd.exe" -ArgumentList "/c C:\Drivers\Ativador.cmd" -Wait
 
-#Step 3: Setup Users
+#Step 3: Update Scripts
+Write-Host "                               " -ForegroundColor Green
+Write-Host "===============================" -ForegroundColor Green
+Write-Host "Step 3: Update Scripts         " -ForegroundColor Green
+Write-Host "===============================" -ForegroundColor Green
+New-PSDrive -Name HKU -PSProvider Registry -Root HKEY_USERS | Out-Null
+Remove-Item "HKU:\.DEFAULT\Software\Startup" -Recurse -Force -ea Ignore
+Remove-Item "HKCU:\Software\Startup" -Recurse -Force -ea Ignore
+Remove-Item "HKLM:\Software\Startup" -Recurse -Force -ea Ignore
+Invoke-Expression "& C:\Windows\Startup.ps1 update"
+
+#Step 4: Setup Users
 Write-Host "                               " -ForegroundColor Green
 Write-Host "===============================" -ForegroundColor Green
 Write-Host "Step 3: Setup Users            " -ForegroundColor Green
@@ -36,14 +47,6 @@ Get-LocalUser -Name $UserName | Set-LocalUser -PasswordNeverExpires $True
 Add-LocalGroupMember -Group "Administradores" -Member $UserName
 Write-Host "INFO: Administrator account was deactivated." -ForegroundColor Green
 Write-Host "INFO: $UserName account was created." -ForegroundColor Green
-
-#Step 4: Apply WinFix
-Write-Host "                               " -ForegroundColor Green
-Write-Host "===============================" -ForegroundColor Green
-Write-Host "Step 4: Update Startup         " -ForegroundColor Green
-Write-Host "===============================" -ForegroundColor Green
-Write-Host "Applying WinFix Script..." -ForegroundColor Green
-Invoke-Expression "& C:\Windows\Startup.ps1 update"
 
 #Finish
 Write-Host "                               " -ForegroundColor Green
