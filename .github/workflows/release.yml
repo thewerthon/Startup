@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Create Zip File
-        run: zip -r Startup.zip . -x ".git/*" ".github/*" ".gitignore" ".vscode/*" "LICENCE.txt" "README.md" "Commands/*" "Drivers/*" "Setup/*"
+        run: zip -r Startup.zip . -x ".git/*" ".github/*" ".gitignore" ".vscode/*" "LICENSE.txt" "README.md" "Commands/*" "Drivers/*" "Setup/*"
 
       - name: Set Tag Name
         run: echo "build=$(printf '%04d' ${{ github.run_number }})" >> $GITHUB_ENV
