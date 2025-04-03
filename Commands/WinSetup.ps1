@@ -35,18 +35,10 @@ Remove-Item "HKCU:\Software\Startup" -Recurse -Force -ea Ignore
 Remove-Item "HKLM:\Software\Startup" -Recurse -Force -ea Ignore
 Invoke-Expression "& C:\Windows\Startup.ps1 update"
 
-#Step 4: Enable BitLocker
+#Step 4: Setup Users
 Write-Host "                               " -ForegroundColor Green
 Write-Host "===============================" -ForegroundColor Green
-Write-Host "Step 4: Enable BitLocker       " -ForegroundColor Green
-Write-Host "===============================" -ForegroundColor Green
-While ($Answer -NotMatch "^[YyNn]$") { $Answer = Read-Host "Enable BitLocker for this device? (Y/N)" }
-If ($Answer -Match "^[Yy]$") { Enable-BitLocker -MountPoint "C:" -EncryptionMethod XtsAes128 -UsedSpaceOnly -TpmProtector -SkipHardwareTest }
-
-#Step 5: Setup Users
-Write-Host "                               " -ForegroundColor Green
-Write-Host "===============================" -ForegroundColor Green
-Write-Host "Step 5: Setup Users            " -ForegroundColor Green
+Write-Host "Step 4: Setup Users            " -ForegroundColor Green
 Write-Host "===============================" -ForegroundColor Green
 $UserName = Read-Host "Enter a name for the user"
 Disable-LocalUser -Name "Administrador"
