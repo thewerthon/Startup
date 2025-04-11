@@ -3,7 +3,7 @@ $VerbosePreference = "SilentlyContinue"
 $ProgressPreference = "SilentlyContinue"
 $ErrorActionPreference = "SilentlyContinue"
 
-#Self-Elevate
+# Self-Elevate
 If (!(([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]'Administrator'))) {
 
     $CommandLine = "-File """ + $MyInvocation.MyCommand.Path + """ " + $MyInvocation.UnboundArguments
@@ -61,23 +61,19 @@ If ($UpdateFlag -Or $InstallFlag) {
 # Install Scripts
 If ($InstallFlag) {
 
-    # Stop Tasks
-    Stop-ScheduledTask -TaskName "Accent" -TaskPath "Startup" -ErrorAction Ignore
-    Stop-ScheduledTask -TaskName "Glyphs" -TaskPath "Startup" -ErrorAction Ignore
-    Stop-ScheduledTask -TaskName "Glyphs" -TaskPath "Startup" -ErrorAction Ignore
+    ForEach ($Task In @("Accent", "Glyphs", "Updater", "System", "User")) {
 
-    # Remove tasks
-    If (Test-Path "C:\Startup\Tasks\Updater.xml") { Get-ScheduledTask -TaskName "Updater" -TaskPath "*Startup*" -ErrorAction Ignore | Unregister-ScheduledTask -Confirm:$False }
-    If (Test-Path "C:\Startup\Tasks\System.xml") { Get-ScheduledTask -TaskName "System" -TaskPath "*Startup*" -ErrorAction Ignore | Unregister-ScheduledTask -Confirm:$False }
-    If (Test-Path "C:\Startup\Tasks\User.xml") { Get-ScheduledTask -TaskName "User" -TaskPath "*Startup*" -ErrorAction Ignore | Unregister-ScheduledTask -Confirm:$False }
-	
-    # Create tasks
-    If (Test-Path "C:\Startup\Tasks\Updater.xml") { Register-ScheduledTask -TaskName "Updater" -TaskPath "Startup" -Xml (Get-Content "C:\Startup\Tasks\Updater.xml" | Out-String) -Force | Out-Null }
-    If (Test-Path "C:\Startup\Tasks\System.xml") { Register-ScheduledTask -TaskName "System" -TaskPath "Startup" -Xml (Get-Content "C:\Startup\Tasks\System.xml" | Out-String) -Force | Out-Null }
-    If (Test-Path "C:\Startup\Tasks\User.xml") { Register-ScheduledTask -TaskName "User" -TaskPath "Startup" -Xml (Get-Content "C:\Startup\Tasks\User.xml" | Out-String) -Force | Out-Null }
-	
-    # Register
-    New-ItemProperty -Path "HKLM:\Software\Startup" -Name "Installed" -Value (Get-Date).ToString("s") -PropertyType "String" -Force | Out-Null
+        # Install Tasks
+        If (Test-Path "C:\Startup\Tasks\$Task.xml") { 
+
+            Stop-ScheduledTask -TaskName $Task -TaskPath "Startup" -ErrorAction Ignore
+            Get-ScheduledTask -TaskName $Task -TaskPath "*Startup*" -ErrorAction Ignore | Unregister-ScheduledTask -Confirm:$False
+            Register-ScheduledTask -TaskName $Task -TaskPath "Startup" -Xml (Get-Content "C:\Startup\Tasks\$Task.xml" | Out-String) -Force | Out-Null
+            New-ItemProperty -Path "HKLM:\Software\Startup" -Name "Installed" -Value (Get-Date).ToString("s") -PropertyType "String" -Force | Out-Null
+
+        }
+
+    }
 
 }
 

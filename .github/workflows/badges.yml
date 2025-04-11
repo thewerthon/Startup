@@ -23,7 +23,7 @@ jobs:
           directory: ./
           version_badge_label: "Current Build"
           updated_badge_label: "Last Updated"
-          patterns: "**/*.ps1|**/*.vbs"
+          patterns: "**/*.ps1|**/*.vbs"|**/*.xml"
           
       - name: Deploy to Branch
         uses: peaceiris/actions-gh-pages@v3
