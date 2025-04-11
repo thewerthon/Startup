@@ -106,7 +106,6 @@ If ($RunUser -Or $RunAll) {
 Remove-Item "C:\Startup\Args.txt" -Force -ErrorAction Ignore
 Remove-Item "C:\Startup\Startup.zip" -Force -ErrorAction Ignore
 Remove-Item "C:\Startup\README.md" -Force -ErrorAction Ignore
-Remove-Item "C:\Startup\Tasks" -Recurse -Force -ErrorAction Ignore
 Remove-Item "C:\Startup\Setup" -Recurse -Force -ErrorAction Ignore
 
 # Terminate
