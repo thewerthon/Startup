@@ -36,6 +36,9 @@ Remove-Item "HKCU:\Software\Startup" -Recurse -Force -ea Ignore
 Remove-Item "HKLM:\Software\Startup" -Recurse -Force -ea Ignore
 Invoke-Expression "& C:\Windows\Startup.ps1 update"
 
+# Fix Appx Packages
+Get-AppxPackage -AllUsers | ForEach-Object { Add-AppxPackage -Register "$($_.InstallLocation)\AppxManifest.xml" -DisableDevelopmentMode }
+
 # Setup Users
 If ((Get-LocalUser "Administrador").Enabled) {
 
