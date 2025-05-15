@@ -1,2 +1,4 @@
-Set MyShell = CreateObject("Shell.Application")
-MyShell.ShellExecute "PowerShell", "-NoLogo -NoExit -NonInteractive -File C:\Startup\Scripts\User.ps1", "", "", 1
+Set WshShell = CreateObject("WScript.Shell")
+Set AppShell = CreateObject("Shell.Application")
+UserDir = WshShell.ExpandEnvironmentStrings("%UserProfile%")
+AppShell.ShellExecute "PowerShell", "-NoLogo -NoExit -File C:\Startup\Scripts\User.ps1", UserDir, "Open", 1

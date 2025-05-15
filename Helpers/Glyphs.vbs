@@ -1,2 +1,2 @@
-Set MyShell = CreateObject("WScript.Shell")
-MyShell.Run "C:\Windows\Glyphs.exe", 0, False
+Set WshShell = CreateObject("WScript.Shell")
+WshShell.Run "C:\Windows\Glyphs.exe", 0, False
