@@ -1,5 +1,5 @@
 # Self-Elevate
-If (!(([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]'Administrator'))) {
+If (-Not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]'Administrator')) {
 
     $CommandLine = "-File """ + $MyInvocation.MyCommand.Path + """ " + $MyInvocation.UnboundArguments
     Start-Process -FilePath PowerShell.exe -Verb Runas -ArgumentList $CommandLine
@@ -37,7 +37,12 @@ Remove-Item "HKLM:\Software\Startup" -Recurse -Force -ea Ignore
 Invoke-Expression "& C:\Windows\Startup.ps1 update"
 
 # Fix Appx Packages
-Get-AppxPackage -AllUsers | ForEach-Object { Add-AppxPackage -Register "$($_.InstallLocation)\AppxManifest.xml" -DisableDevelopmentMode }
+Get-AppxPackage -AllUsers | ForEach-Object {
+    
+    $Manifest = "$($_.InstallLocation)\AppxManifest.xml"
+    If (Test-Path $Manifest) { Add-AppxPackage -Register $Manifest -DisableDevelopmentMode -ForceApplicationShutdown -ErrorAction Ignore }
+
+}
 
 # Setup Users
 If ((Get-LocalUser "Administrador").Enabled) {
