@@ -6,8 +6,9 @@ $ErrorActionPreference = "SilentlyContinue"
 # Self-Elevate
 If (-Not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]'Administrator')) {
 
+    $ConsoleHost = If (Get-Command WT -ErrorAction SilentlyContinue) { "WT" } Else { "ConHost" }
     $CommandLine = "-File """ + $MyInvocation.MyCommand.Path + """ " + $MyInvocation.UnboundArguments
-    Start-Process -FilePath PowerShell.exe -Verb Runas -ArgumentList $CommandLine
+    Start-Process -FilePath $ConsoleHost -Verb Runas -ArgumentList PowerShell, $CommandLine
     Exit
 
 }
